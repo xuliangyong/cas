@@ -1,0 +1,55 @@
+﻿<?xml version="1.0"  encoding="utf-8" ?>  
+<project name="single" default="war" basedir="."> 
+	
+	<property name="tomcat.dir.lib"  value="/var/lib/tomcat/apache-tomcat-8.0.33/lib"/>
+    <!--工程web目录位置-->
+    <property name="project.webPath.dir"  value="WebContent"/>
+    <!--工程源程序代码目录位置 -->
+    <property name="project.src.dir"  value="src"/>
+    <property name="project.resources.dir"  value="resource"/>
+    <!--classes发布目录位置 -->
+    <property name="project.deploy.dir"  value="target"/>
+    <!--classes临时目录位置 -->
+    <property name="project.classTemp.dir"  value="target/classes"/>
+	
+	<path id="compile.classpath">
+		<fileset dir="${project.webPath.dir}/WEB-INF/lib">
+		    <include name="*.jar"/>
+		</fileset>
+		<fileset dir="${tomcat.dir.lib}">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+	
+	<target name="clean">
+		<delete dir="${project.deploy.dir}"/>
+		<mkdir dir="${project.deploy.dir}"/>
+		<mkdir dir="${project.classTemp.dir}"/>
+	</target>
+	
+	<target name="compile" depends="clean">
+		<javac destdir="${project.classTemp.dir}"  encoding="UTF-8" includeJavaRuntime="no" includeantruntime="no" debug="true" srcdir="${project.src.dir}">
+			<classpath refid="compile.classpath"/>
+		</javac>
+		<copy todir="${project.classTemp.dir}">
+			<fileset dir="${project.src.dir}">
+				<exclude name="**/*.java" />
+			</fileset>
+			<fileset dir="${project.resources.dir}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="war" depends="compile">
+		<war destfile="${project.deploy.dir}/mall.war" webxml="${project.webPath.dir}/WEB-INF/web.xml" encoding="UTF-8">
+			<classes dir="${project.classTemp.dir}"/>
+			<fileset dir="${project.webPath.dir}">
+				<exclude name="/WEB-INF/classes/" />
+				<exclude name="**/servlet-api.jar" />
+				<exclude name="**/jsp-api.jar" />
+			</fileset>
+		</war>
+	</target>
+	 
+</project> 
